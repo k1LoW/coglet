@@ -15,7 +15,6 @@ builds:
     goarch:
       - amd64
       - arm64
-    main: ./cmd/coglet/main.go
   -
     id: coglet-windows
     ldflags:
@@ -26,7 +25,6 @@ builds:
       - windows
     goarch:
       - amd64
-    main: ./cmd/coglet/main.go
   -
     id: coglet-linux
     ldflags:
@@ -38,7 +36,6 @@ builds:
     goarch:
       - amd64
       - arm64
-    main: ./cmd/coglet/main.go
 archives:
   -
     id: coglet-archive

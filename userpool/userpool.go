@@ -19,8 +19,8 @@ type Client struct {
 
 type User struct {
 	Username   string         `json:"username"`
-	Password   string         `json:"password"`
-	Attributes map[string]any `json:"attributes"`
+	Password   string         `json:"password,omitempty"`
+	Attributes map[string]any `json:"attributes,omitempty"`
 }
 
 type ApplyUserOption struct {
