@@ -1,0 +1,81 @@
+version: 2
+before:
+  hooks:
+    - go mod download
+    - go mod tidy
+builds:
+  -
+    id: coglet-darwin
+    ldflags:
+      - -s -w -X github.com/k1LoW/coglet.version={{.Version}} -X github.com/k1LoW/coglet.commit={{.FullCommit}} -X github.com/k1LoW/coglet.date={{.Date}} -X github.com/k1LoW/coglet/version.Version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    main: ./cmd/coglet/main.go
+  -
+    id: coglet-windows
+    ldflags:
+      - -s -w -X github.com/k1LoW/coglet.version={{.Version}} -X github.com/k1LoW/coglet.commit={{.FullCommit}} -X github.com/k1LoW/coglet.date={{.Date}} -X github.com/k1LoW/coglet/version.Version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+    goarch:
+      - amd64
+    main: ./cmd/coglet/main.go
+  -
+    id: coglet-linux
+    ldflags:
+      - -s -w -X github.com/k1LoW/coglet.version={{.Version}} -X github.com/k1LoW/coglet.commit={{.FullCommit}} -X github.com/k1LoW/coglet.date={{.Date}} -X github.com/k1LoW/coglet/version.Version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    main: ./cmd/coglet/main.go
+archives:
+  -
+    id: coglet-archive
+    name_template: '{{ .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    format_overrides:
+      - goos: darwin
+        formats:
+          - zip
+    files:
+      - LICENSE
+      - CREDITS
+      - README.md
+      - CHANGELOG.md
+checksum:
+  name_template: 'checksums.txt'
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+nfpms:
+  -
+    id: coglet-nfpms
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}-1_{{ .Arch }}"
+    builds:
+      - coglet-linux
+    homepage: https://github.com/k1LoW/coglet
+    maintainer: Ken'ichiro Oyama <k1lowxb@gmail.com>
+    description: coglet is a tool for User pool of Amazon Cognito.
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - apk
+    bindir: /usr/bin
+    epoch: 1
+release:
+  draft: true
+  replace_existing_draft: true
