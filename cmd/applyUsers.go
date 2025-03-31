@@ -89,13 +89,20 @@ var applyUsersCmd = &cobra.Command{
 			}
 		}
 
+		if dryRun {
+			slog.Info("dry-run: apply users started")
+		} else {
+			slog.Info("apply users started")
+		}
+
 		applied := atomic.Int64{}
+		skipped := atomic.Int64{}
 		defer func() {
 			if dryRun {
-				slog.Info("dry-run: applied users", slog.Int64("count", applied.Load()))
+				slog.Info("dry-run: apply users completed", slog.Int64("total", applied.Load()), slog.Int64("skipped", skipped.Load()))
 				return
 			}
-			slog.Info("applied users", slog.Int64("count", applied.Load()))
+			slog.Info("apply users completed", slog.Int64("total", applied.Load()), slog.Int64("skipped", skipped.Load()))
 		}()
 
 		for scanner.Scan() {
@@ -112,6 +119,7 @@ var applyUsersCmd = &cobra.Command{
 				if verbose {
 					slog.Info("skip user", slog.String("username", user.Username))
 				}
+				skipped.Add(1)
 				continue
 			}
 			if verbose {

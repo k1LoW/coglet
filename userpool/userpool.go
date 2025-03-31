@@ -231,6 +231,10 @@ func (c *Client) detectUserPoolID(ctx context.Context, userPoolIDOrName string) 
 		}
 		nextToken = resp.NextToken
 	}
+
+	if foundIDByName != "" {
+		return foundIDByName, nil
+	}
 	return "", fmt.Errorf("user pool not found: %s", userPoolIDOrName)
 }
 
