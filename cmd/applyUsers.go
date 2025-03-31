@@ -37,7 +37,13 @@ import (
 )
 
 var (
-	dryRun bool
+	password              string
+	randomPassword        bool
+	permanentPassword     bool
+	sendPasswordResetCode bool
+	filter                string
+	dryRun                bool
+	verbose               bool
 )
 
 var applyUsersCmd = &cobra.Command{
@@ -63,20 +69,20 @@ var applyUsersCmd = &cobra.Command{
 		l := 0
 		eg := new(errgroup.Group)
 		opts := []userpool.ApplyUserOptionFunc{}
-		if password, _ := cmd.Flags().GetString("password"); password != "" {
+		if password != "" {
 			opts = append(opts, userpool.WithPassword(password))
 		}
-		if randomPassword, _ := cmd.Flags().GetBool("random-password"); randomPassword {
+		if randomPassword {
 			opts = append(opts, userpool.WithRandomPassword())
 		}
-		if permanentPassword, _ := cmd.Flags().GetBool("permanent-password"); permanentPassword {
+		if permanentPassword {
 			opts = append(opts, userpool.WithPermanentPassword())
 		}
-		if sendPasswordResetCode, _ := cmd.Flags().GetBool("send-password-reset-code"); sendPasswordResetCode {
+		if sendPasswordResetCode {
 			opts = append(opts, userpool.WithSendPasswordResetCode())
 		}
 		var filterRe *regexp.Regexp
-		if filter, _ := cmd.Flags().GetString("filter"); filter != "" {
+		if filter != "" {
 			filterRe, err = regexp.Compile(filter)
 			if err != nil {
 				return err
@@ -103,9 +109,14 @@ var applyUsersCmd = &cobra.Command{
 				return fmt.Errorf("line %d: %w", l, err)
 			}
 			if filterRe != nil && !filterRe.MatchString(user.Username) {
+				if verbose {
+					slog.Info("skip user", slog.String("username", user.Username))
+				}
 				continue
 			}
-			slog.Info("appliying user", slog.String("username", user.Username))
+			if verbose {
+				slog.Info("appliying user", slog.String("username", user.Username))
+			}
 			if dryRun {
 				applied.Add(1)
 				continue
@@ -130,10 +141,11 @@ var applyUsersCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(applyUsersCmd)
-	applyUsersCmd.Flags().String("password", "", "set password")
-	applyUsersCmd.Flags().Bool("random-password", false, "set random password")
-	applyUsersCmd.Flags().Bool("permanent-password", false, "permanent password")
-	applyUsersCmd.Flags().Bool("send-password-reset-code", false, "send password reset code")
-	applyUsersCmd.Flags().String("filter", "", "filter apply users")
+	applyUsersCmd.Flags().StringVarP(&password, "password", "p", "", "set password")
+	applyUsersCmd.Flags().BoolVarP(&randomPassword, "random-password", "r", false, "set random password")
+	applyUsersCmd.Flags().BoolVarP(&permanentPassword, "permanent-password", "P", false, "set permanent password")
+	applyUsersCmd.Flags().BoolVarP(&sendPasswordResetCode, "send-password-reset-code", "s", false, "send password reset code")
+	applyUsersCmd.Flags().StringVarP(&filter, "filter", "f", "", "filter apply users")
 	applyUsersCmd.Flags().BoolVar(&dryRun, "dry-run", false, "dry run")
+	applyUsersCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 }
