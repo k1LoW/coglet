@@ -2,6 +2,9 @@ package userpool
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"errors"
 	"fmt"
 
@@ -31,6 +34,13 @@ type ApplyUserOption struct {
 }
 
 type ApplyUserOptionFunc func(*ApplyUserOption) error
+
+type LoginAsOption struct {
+	ClientIDOrName string
+	ClientSecret   string
+}
+
+type LoginAsOptionFunc func(*LoginAsOption) error
 
 func WithPassword(password string) ApplyUserOptionFunc {
 	return func(opt *ApplyUserOption) error {
@@ -62,6 +72,20 @@ func WithPermanentPassword() ApplyUserOptionFunc {
 func WithSendPasswordResetCode() ApplyUserOptionFunc {
 	return func(opt *ApplyUserOption) error {
 		opt.SendPasswordResetCode = true
+		return nil
+	}
+}
+
+func WithClientIDOrName(clientIDOrName string) LoginAsOptionFunc {
+	return func(opt *LoginAsOption) error {
+		opt.ClientIDOrName = clientIDOrName
+		return nil
+	}
+}
+
+func WithClientSecret(clientSecret string) LoginAsOptionFunc {
+	return func(opt *LoginAsOption) error {
+		opt.ClientSecret = clientSecret
 		return nil
 	}
 }
@@ -143,6 +167,73 @@ func (c *Client) ApplyUser(ctx context.Context, user User, opts ...ApplyUserOpti
 	}
 
 	return nil
+}
+
+func (c *Client) LoginAs(ctx context.Context, user User, opts ...LoginAsOptionFunc) (*cognito.InitiateAuthOutput, error) {
+	opt := LoginAsOption{}
+	for _, o := range opts {
+		if err := o(&opt); err != nil {
+			return nil, err
+		}
+	}
+
+	// list user pool clients
+	out, err := c.client.ListUserPoolClients(ctx, &cognito.ListUserPoolClientsInput{
+		UserPoolId: aws.String(c.userPoolID),
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(out.UserPoolClients) == 0 {
+		return nil, errors.New("no user pool clients found")
+	}
+	var (
+		clientID *string
+	)
+
+	if len(out.UserPoolClients) == 1 {
+		if opt.ClientIDOrName != "" {
+			if *out.UserPoolClients[0].ClientId != opt.ClientIDOrName && *out.UserPoolClients[0].ClientName != opt.ClientIDOrName {
+				return nil, fmt.Errorf("client not found: %s", opt.ClientIDOrName)
+			}
+		}
+		clientID = out.UserPoolClients[0].ClientId
+	} else {
+		if opt.ClientIDOrName == "" {
+			return nil, errors.New("client ID or name is required")
+		}
+		for _, c := range out.UserPoolClients {
+			if *c.ClientId == opt.ClientIDOrName {
+				clientID = c.ClientId
+				break
+			}
+			if *c.ClientName == opt.ClientIDOrName {
+				if clientID != nil {
+					return nil, fmt.Errorf("client name is ambiguous: %s", opt.ClientIDOrName)
+				}
+				clientID = c.ClientId
+			}
+		}
+		if clientID == nil {
+			return nil, fmt.Errorf("client not found: %s", opt.ClientIDOrName)
+		}
+	}
+
+	input := &cognito.InitiateAuthInput{
+		ClientId: clientID,
+		AuthFlow: types.AuthFlowTypeUserPasswordAuth,
+		AuthParameters: map[string]string{
+			"USERNAME": user.Username,
+			"PASSWORD": user.Password,
+		},
+	}
+
+	if opt.ClientSecret != "" {
+		input.AuthParameters["SECRET_HASH"] = secretHash(*clientID, opt.ClientSecret, user.Username)
+	}
+
+	// use initiated-login
+	return c.client.InitiateAuth(ctx, input)
 }
 
 func (c *Client) createUser(ctx context.Context, user User) error {
@@ -274,4 +365,10 @@ func generatePassword(policy types.PasswordPolicyType) (string, error) {
 		return "", err
 	}
 	return pass.String(), nil
+}
+
+func secretHash(clientID, clientSecret, email string) string {
+	h := hmac.New(sha256.New, []byte(clientSecret))
+	h.Write([]byte(email + clientID))
+	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }
