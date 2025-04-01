@@ -114,6 +114,53 @@ Apply users with additional client metadata:
 coglet apply-users MyUserPool users.jsonl --client-metadata '{"source":"batch-import","department":"HR"}'
 ```
 
+### `coglet login-as`
+
+The `coglet login-as` command allows you to authenticate as a specific user in an Amazon Cognito user pool and obtain authentication tokens.
+
+```
+coglet login-as [USER_POOL_ID_OR_NAME] [USERNAME]
+```
+
+- `USER_POOL_ID_OR_NAME`: The ID or name of the Cognito user pool. You can specify either the pool ID (e.g., `us-east-1_abc123`) or the pool name (e.g., `MyUserPool`). If multiple pools have the same name, an error will be returned.
+
+- `USERNAME`: The username of the user to authenticate as.
+
+#### Flags
+
+- `--password <string>`, `-p <string>`: Set the password for authentication. If not provided, the command will use the `COGLET_PASSWORD` environment variable.
+
+- `--client <string>`, `-c <string>`: Specify the user pool client ID or name to use for authentication.
+
+- `--client-metadata <string>`, `-m <string>`: Set client metadata for the authentication request. This can be provided in JSON format (`{"key1":"value1","key2":"value2"}`) or as key-value pairs (`key1=value1,key2=value2`).
+
+#### Examples
+
+Authenticate as a user with password provided as a flag:
+
+```
+coglet login-as MyUserPool user1 --password MyPassword123
+```
+
+Authenticate as a user with password from environment variable:
+
+```
+export COGLET_PASSWORD=MyPassword123
+coglet login-as MyUserPool user1
+```
+
+Authenticate using a specific client:
+
+```
+coglet login-as MyUserPool user1 --password MyPassword123 --client MyClientApp
+```
+
+Authenticate with client metadata:
+
+```
+coglet login-as MyUserPool user1 --password MyPassword123 --client-metadata '{"device":"mobile","location":"tokyo"}'
+```
+
 ## Install
 
 **deb:**
