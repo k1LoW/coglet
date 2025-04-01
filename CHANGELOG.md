@@ -1,5 +1,7 @@
 # Changelog
 
+## [v0.1.1](https://github.com/k1LoW/coglet/compare/v0.1.0...v0.1.1) - 2025-04-01
+
 ## [v0.1.0](https://github.com/k1LoW/coglet/compare/v0.0.3...v0.1.0) - 2025-04-01
 ### New Features 🎉
 - feat(cmd): add `login-as` command for user pool authentication by @k1LoW in https://github.com/k1LoW/coglet/pull/4
