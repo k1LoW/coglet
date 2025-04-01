@@ -44,6 +44,7 @@ var (
 	filter                string
 	dryRun                bool
 	verbose               bool
+	cols                  string
 )
 
 var applyUsersCmd = &cobra.Command{
@@ -112,8 +113,30 @@ var applyUsersCmd = &cobra.Command{
 				continue
 			}
 			var user userpool.User
-			if err := json.Unmarshal([]byte(line), &user); err != nil {
-				return fmt.Errorf("line %d: %w", l, err)
+			if cols == "" {
+				// AS JSONL
+				if err := json.Unmarshal([]byte(line), &user); err != nil {
+					return fmt.Errorf("line %d: %w", l, err)
+				}
+			} else {
+				// CSV
+				keys := strings.Split(cols, ",")
+				fields := strings.Split(line, ",")
+				if len(keys) != len(fields) {
+					return fmt.Errorf("line %d: invalid format", l)
+				}
+				for i, key := range keys {
+					switch {
+					case key == "username":
+						user.Username = fields[i]
+					case key == "password":
+						user.Password = fields[i]
+					case key == "":
+						continue
+					default:
+						user.Attributes[key] = fields[i]
+					}
+				}
 			}
 			if filterRe != nil && !filterRe.MatchString(user.Username) {
 				if verbose {
@@ -154,6 +177,7 @@ func init() {
 	applyUsersCmd.Flags().BoolVarP(&permanentPassword, "permanent-password", "P", false, "set permanent password")
 	applyUsersCmd.Flags().BoolVarP(&sendPasswordResetCode, "send-password-reset-code", "s", false, "send password reset code")
 	applyUsersCmd.Flags().StringVarP(&filter, "filter", "f", "", "filter apply users")
+	applyUsersCmd.Flags().StringVarP(&cols, "columns", "c", "", "define columns for CSV format")
 	applyUsersCmd.Flags().BoolVar(&dryRun, "dry-run", false, "dry run")
 	applyUsersCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 }
