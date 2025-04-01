@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.3.0](https://github.com/k1LoW/coglet/compare/v0.2.0...v0.3.0) - 2025-04-01
+### New Features 🎉
+- feat(userpool): add support for client metadata in user creation, update and login by @k1LoW in https://github.com/k1LoW/coglet/pull/12
+
 ## [v0.2.0](https://github.com/k1LoW/coglet/compare/v0.1.3...v0.2.0) - 2025-04-01
 ### New Features 🎉
 - fix(cmd,userpool): remove client secret handling from `login-as` command by @k1LoW in https://github.com/k1LoW/coglet/pull/10
