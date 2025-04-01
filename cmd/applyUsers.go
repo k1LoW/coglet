@@ -27,6 +27,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"maps"
 	"os"
 	"regexp"
 	"strings"
@@ -46,6 +47,7 @@ var (
 	dryRun                bool
 	verbose               bool
 	cols                  string
+	clientMetadata        string
 )
 
 var applyUsersCmd = &cobra.Command{
@@ -96,6 +98,11 @@ var applyUsersCmd = &cobra.Command{
 			slog.Info("apply users started")
 		}
 
+		cm, err := parseClientMetadata(clientMetadata)
+		if err != nil {
+			return err
+		}
+
 		ctx, cancel := donegroup.WithCancel(ctx)
 
 		applied := atomic.Int64{}
@@ -114,7 +121,10 @@ var applyUsersCmd = &cobra.Command{
 			if line == "" || strings.HasPrefix(line, "#") {
 				continue
 			}
-			var user userpool.User
+			user := userpool.User{
+				Attributes:     map[string]any{},
+				ClientMetadata: map[string]string{},
+			}
 			if cols == "" {
 				// AS JSONL
 				if err := json.Unmarshal([]byte(line), &user); err != nil {
@@ -122,7 +132,6 @@ var applyUsersCmd = &cobra.Command{
 				}
 			} else {
 				// CSV
-				user.Attributes = map[string]any{}
 				keys := strings.Split(cols, ",")
 				fields := strings.Split(line, ",")
 				if len(keys) != len(fields) {
@@ -141,6 +150,10 @@ var applyUsersCmd = &cobra.Command{
 					}
 				}
 			}
+
+			// additinal client metadata
+			maps.Copy(user.ClientMetadata, cm)
+
 			if filterRe != nil && !filterRe.MatchString(user.Username) {
 				if verbose {
 					slog.Info("skip user", slog.String("username", user.Username))
@@ -192,6 +205,27 @@ func init() {
 	applyUsersCmd.Flags().BoolVarP(&sendPasswordResetCode, "send-password-reset-code", "s", false, "send password reset code")
 	applyUsersCmd.Flags().StringVarP(&filter, "filter", "f", "", "filter apply users")
 	applyUsersCmd.Flags().StringVarP(&cols, "columns", "c", "", "define columns for CSV format")
+	applyUsersCmd.Flags().StringVarP(&clientMetadata, "client-metadata", "m", "", "set client metadata")
 	applyUsersCmd.Flags().BoolVar(&dryRun, "dry-run", false, "dry run")
 	applyUsersCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+}
+
+func parseClientMetadata(in string) (map[string]string, error) {
+	// {"key1":"value1","key2":"value2"}
+	m := map[string]string{}
+	if in == "" {
+		return m, nil
+	}
+	if err := json.Unmarshal([]byte(in), &m); err == nil {
+		return m, nil
+	}
+	// key1=value1,key2=value2
+	for _, kv := range strings.Split(in, ",") {
+		kv := strings.Split(kv, "=")
+		if len(kv) != 2 {
+			return nil, fmt.Errorf("invalid format for client metadata")
+		}
+		m[kv[0]] = kv[1]
+	}
+	return m, nil
 }

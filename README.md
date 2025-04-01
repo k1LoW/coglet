@@ -30,6 +30,8 @@ coglet apply-users [USER_POOL_ID_OR_NAME] [USERS_FILE]
 
 - `--dry-run`: Perform a dry run without actually creating or updating users. Useful for testing.
 
+- `--client-metadata <string>`: Set client metadata for all users. This can be provided in JSON format (`{"key1":"value1","key2":"value2"}`) or as key-value pairs (`key1=value1,key2=value2`). This metadata is passed to the Cognito service during user creation/update and can be used for custom workflows.
+
 - `--columns <string>`: Define the column structure for CSV format. Specify a comma-separated list of column names that map to user attributes. Use `username` and `password` for those fields, and attribute names for other columns. Empty values (,,) are skipped. Example: `--columns username,password,email,email_verified,,phone_number,custom:attribute`
 
 #### Users file format
@@ -39,7 +41,7 @@ coglet apply-users [USER_POOL_ID_OR_NAME] [USERS_FILE]
 The user JSON format by line should be:
 
 ```json
-{"username": "user1", "password": "optional-password", "attributes": {"email": "user1@example.com", "email_verified": true, "phone_number": "+1234567890", "custom:attribute": "value"}}
+{"username": "user1", "password": "optional-password", "attributes": {"email": "user1@example.com", "email_verified": true, "phone_number": "+1234567890", "custom:attribute": "value"}, "clientMetadata": {"KeyName1":"string"}}
 ```
 
 expanded is:
@@ -54,6 +56,9 @@ expanded is:
     "email_verified": true,
     "phone_number": "+1234567890",
     "custom:attribute": "value"
+  },
+  "clientMetadata": {
+    "KeyName1":"string"
   }
 }
 ```
@@ -101,6 +106,12 @@ Test the command without making changes:
 
 ```
 coglet apply-users MyUserPool users.jsonl --dry-run
+```
+
+Apply users with additional client metadata:
+
+```
+coglet apply-users MyUserPool users.jsonl --client-metadata '{"source":"batch-import","department":"HR"}'
 ```
 
 ## Install

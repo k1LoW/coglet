@@ -48,9 +48,14 @@ var loginAsCmd = &cobra.Command{
 		if password == "" {
 			password = os.Getenv("COGLET_PASSWORD")
 		}
+		cm, err := parseClientMetadata(clientMetadata)
+		if err != nil {
+			return nil
+		}
 		user := userpool.User{
-			Username: username,
-			Password: password,
+			Username:       username,
+			Password:       password,
+			ClientMetadata: cm,
 		}
 		out, err := up.LoginAs(ctx, user, userpool.WithClientIDOrName(client))
 		if err != nil {
@@ -69,4 +74,5 @@ func init() {
 	rootCmd.AddCommand(loginAsCmd)
 	loginAsCmd.Flags().StringVarP(&password, "password", "p", "", "password. if not set, use COGLET_PASSWORD env")
 	loginAsCmd.Flags().StringVarP(&client, "client", "c", "", "user pool client id or name")
+	loginAsCmd.Flags().StringVarP(&clientMetadata, "client-metadata", "m", "", "set client metadata")
 }
