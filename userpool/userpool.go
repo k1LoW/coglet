@@ -21,9 +21,10 @@ type Client struct {
 }
 
 type User struct {
-	Username   string         `json:"username"`
-	Password   string         `json:"password,omitempty"`
-	Attributes map[string]any `json:"attributes,omitempty"`
+	Username       string            `json:"username"`
+	Password       string            `json:"password,omitempty"`
+	Attributes     map[string]any    `json:"attributes,omitempty"`
+	ClientMetadata map[string]string `json:"clientMetadata,omitempty"`
 }
 
 type ApplyUserOption struct {
@@ -227,6 +228,7 @@ func (c *Client) LoginAs(ctx context.Context, user User, opts ...LoginAsOptionFu
 			"PASSWORD":    user.Password,
 			"SECRET_HASH": secretHash(*clientID, *uc.UserPoolClient.ClientSecret, user.Username),
 		},
+		ClientMetadata: user.ClientMetadata,
 	}
 
 	// use initiated-login
@@ -235,8 +237,9 @@ func (c *Client) LoginAs(ctx context.Context, user User, opts ...LoginAsOptionFu
 
 func (c *Client) createUser(ctx context.Context, user User) error {
 	input := &cognito.AdminCreateUserInput{
-		UserPoolId: aws.String(c.userPoolID),
-		Username:   aws.String(user.Username),
+		UserPoolId:     aws.String(c.userPoolID),
+		Username:       aws.String(user.Username),
+		ClientMetadata: user.ClientMetadata,
 	}
 	if _, err := c.client.AdminCreateUser(ctx, input); err != nil {
 		return err
@@ -257,6 +260,7 @@ func (c *Client) updateUserAttributes(ctx context.Context, user User) error {
 		UserPoolId:     aws.String(c.userPoolID),
 		Username:       aws.String(user.Username),
 		UserAttributes: userAttrs,
+		ClientMetadata: user.ClientMetadata,
 	}); err != nil {
 		return err
 	}

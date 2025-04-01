@@ -39,7 +39,7 @@ coglet apply-users [USER_POOL_ID_OR_NAME] [USERS_FILE]
 The user JSON format by line should be:
 
 ```json
-{"username": "user1", "password": "optional-password", "attributes": {"email": "user1@example.com", "email_verified": true, "phone_number": "+1234567890", "custom:attribute": "value"}}
+{"username": "user1", "password": "optional-password", "attributes": {"email": "user1@example.com", "email_verified": true, "phone_number": "+1234567890", "custom:attribute": "value"}, "clientMetadata": {"KeyName1":"string"}}
 ```
 
 expanded is:
@@ -54,6 +54,9 @@ expanded is:
     "email_verified": true,
     "phone_number": "+1234567890",
     "custom:attribute": "value"
+  },
+  "clientMetadata": {
+    "KeyName1":"string"
   }
 }
 ```
