@@ -18,6 +18,10 @@ coglet apply-users [USER_POOL_ID_OR_NAME] [USERS_FILE]
 
 - `USERS_FILE`: Path to a file containing user data. Each line in the file should contain a JSON object representing a user (known as [JSONL](https://jsonlines.org/)). Empty lines and lines starting with `#` are ignored.
 
+### Users file format
+
+#### JSONL
+
 The user JSON format by line should be:
 
 ```json
@@ -38,6 +42,18 @@ expanded is:
     "custom:attribute": "value"
   }
 }
+```
+
+#### CSV
+
+Read as CSV file by defining CSV format with `--columns` flag.
+
+```
+--columns username,password,email,email_verified,,phone_number,custom:attribute
+```
+
+```csv
+user1,optional-password,user1@example.com,true,,+1234567890,value
 ```
 
 #### Flags
