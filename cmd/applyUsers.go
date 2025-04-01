@@ -120,6 +120,7 @@ var applyUsersCmd = &cobra.Command{
 				}
 			} else {
 				// CSV
+				user.Attributes = map[string]any{}
 				keys := strings.Split(cols, ",")
 				fields := strings.Split(line, ",")
 				if len(keys) != len(fields) {
