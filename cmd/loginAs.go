@@ -68,5 +68,5 @@ var loginAsCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(loginAsCmd)
 	loginAsCmd.Flags().StringVarP(&password, "password", "p", "", "password. if not set, use COGLET_PASSWORD env")
-	loginAsCmd.Flags().StringVarP(&client, "client", "c", "", "client id or name")
+	loginAsCmd.Flags().StringVarP(&client, "client", "c", "", "user pool client id or name")
 }
