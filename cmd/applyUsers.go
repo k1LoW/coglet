@@ -23,6 +23,7 @@ package cmd
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -154,9 +155,15 @@ var applyUsersCmd = &cobra.Command{
 				applied.Add(1)
 				continue
 			}
+			select {
+			case <-ctx.Done():
+				continue
+			default:
+			}
+
 			func(l int) {
 				donegroup.Go(ctx, func() error {
-					if err := up.ApplyUser(ctx, user, opts...); err != nil {
+					if err := up.ApplyUser(context.WithoutCancel(ctx), user, opts...); err != nil {
 						cancel()
 						return fmt.Errorf("line %d: %w", l, err)
 					}
@@ -169,6 +176,7 @@ var applyUsersCmd = &cobra.Command{
 		if err := scanner.Err(); err != nil {
 			return err
 		}
+		cancel()
 		if err := donegroup.Wait(ctx); err != nil {
 			return err
 		}
