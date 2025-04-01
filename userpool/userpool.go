@@ -37,7 +37,6 @@ type ApplyUserOptionFunc func(*ApplyUserOption) error
 
 type LoginAsOption struct {
 	ClientIDOrName string
-	ClientSecret   string
 }
 
 type LoginAsOptionFunc func(*LoginAsOption) error
@@ -79,13 +78,6 @@ func WithSendPasswordResetCode() ApplyUserOptionFunc {
 func WithClientIDOrName(clientIDOrName string) LoginAsOptionFunc {
 	return func(opt *LoginAsOption) error {
 		opt.ClientIDOrName = clientIDOrName
-		return nil
-	}
-}
-
-func WithClientSecret(clientSecret string) LoginAsOptionFunc {
-	return func(opt *LoginAsOption) error {
-		opt.ClientSecret = clientSecret
 		return nil
 	}
 }
@@ -219,17 +211,22 @@ func (c *Client) LoginAs(ctx context.Context, user User, opts ...LoginAsOptionFu
 		}
 	}
 
+	uc, err := c.client.DescribeUserPoolClient(ctx, &cognito.DescribeUserPoolClientInput{
+		UserPoolId: aws.String(c.userPoolID),
+		ClientId:   clientID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	input := &cognito.InitiateAuthInput{
 		ClientId: clientID,
 		AuthFlow: types.AuthFlowTypeUserPasswordAuth,
 		AuthParameters: map[string]string{
-			"USERNAME": user.Username,
-			"PASSWORD": user.Password,
+			"USERNAME":    user.Username,
+			"PASSWORD":    user.Password,
+			"SECRET_HASH": secretHash(*clientID, *uc.UserPoolClient.ClientSecret, user.Username),
 		},
-	}
-
-	if opt.ClientSecret != "" {
-		input.AuthParameters["SECRET_HASH"] = secretHash(*clientID, opt.ClientSecret, user.Username)
 	}
 
 	// use initiated-login
