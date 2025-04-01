@@ -30,10 +30,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	client       string
-	clientSecret string
-)
+var client string
 
 var loginAsCmd = &cobra.Command{
 	Use:   "login-as [USER_POOL_ID_OR_NAME] [USERNAME]",
@@ -51,18 +48,15 @@ var loginAsCmd = &cobra.Command{
 		if password == "" {
 			password = os.Getenv("COGLET_PASSWORD")
 		}
-		if clientSecret == "" {
-			clientSecret = os.Getenv("COGLET_CLIENT_SECRET")
-		}
 		user := userpool.User{
 			Username: username,
 			Password: password,
 		}
-		out, err := up.LoginAs(ctx, user, userpool.WithClientSecret(clientSecret), userpool.WithClientIDOrName(client))
+		out, err := up.LoginAs(ctx, user, userpool.WithClientIDOrName(client))
 		if err != nil {
 			return err
 		}
-		b, err := json.MarshalIndent(out, "", "  ")
+		b, err := json.Marshal(out)
 		if err != nil {
 			return err
 		}
@@ -74,6 +68,5 @@ var loginAsCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(loginAsCmd)
 	loginAsCmd.Flags().StringVarP(&password, "password", "p", "", "password. if not set, use COGLET_PASSWORD env")
-	loginAsCmd.Flags().StringVarP(&client, "client", "c", "", "client id or name")
-	loginAsCmd.Flags().StringVarP(&clientSecret, "client-secret", "s", "", "client secret. if not set, use COGLET_CLIENT_SECRET env")
+	loginAsCmd.Flags().StringVarP(&client, "client", "c", "", "user pool client id or name")
 }
