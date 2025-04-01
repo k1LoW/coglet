@@ -32,8 +32,8 @@ import (
 	"sync/atomic"
 
 	"github.com/k1LoW/coglet/userpool"
+	"github.com/k1LoW/donegroup"
 	"github.com/spf13/cobra"
-	"golang.org/x/sync/errgroup"
 )
 
 var (
@@ -68,7 +68,6 @@ var applyUsersCmd = &cobra.Command{
 
 		scanner := bufio.NewScanner(f)
 		l := 0
-		eg := new(errgroup.Group)
 		opts := []userpool.ApplyUserOptionFunc{}
 		if password != "" {
 			opts = append(opts, userpool.WithPassword(password))
@@ -95,6 +94,8 @@ var applyUsersCmd = &cobra.Command{
 		} else {
 			slog.Info("apply users started")
 		}
+
+		ctx, cancel := donegroup.WithCancel(ctx)
 
 		applied := atomic.Int64{}
 		skipped := atomic.Int64{}
@@ -153,18 +154,22 @@ var applyUsersCmd = &cobra.Command{
 				applied.Add(1)
 				continue
 			}
-			eg.Go(func() error {
-				if err := up.ApplyUser(ctx, user, opts...); err != nil {
-					return fmt.Errorf("line %d: %w", l, err)
-				}
-				applied.Add(1)
-				return nil
-			})
+			func(l int) {
+				donegroup.Go(ctx, func() error {
+					if err := up.ApplyUser(ctx, user, opts...); err != nil {
+						cancel()
+						return fmt.Errorf("line %d: %w", l, err)
+					}
+					applied.Add(1)
+					return nil
+				})
+			}(l)
+
 		}
 		if err := scanner.Err(); err != nil {
 			return err
 		}
-		if err := eg.Wait(); err != nil {
+		if err := donegroup.Wait(ctx); err != nil {
 			return err
 		}
 		return nil

@@ -33,7 +33,7 @@ var rootCmd = &cobra.Command{
 	Use:          "coglet",
 	Short:        "coglet is a tool for User pool of Amazon Cognito",
 	Long:         `coglet is a tool for User pool of Amazon Cognito.`,
-	SilenceUsage: false,
+	SilenceUsage: true,
 	Version:      version.Version,
 }
 
