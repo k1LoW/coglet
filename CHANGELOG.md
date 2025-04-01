@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.2.0](https://github.com/k1LoW/coglet/compare/v0.1.3...v0.2.0) - 2025-04-01
+### New Features 🎉
+- fix(cmd,userpool): remove client secret handling from `login-as` command by @k1LoW in https://github.com/k1LoW/coglet/pull/10
+
 ## [v0.1.3](https://github.com/k1LoW/coglet/compare/v0.1.2...v0.1.3) - 2025-04-01
 
 ## [v0.1.2](https://github.com/k1LoW/coglet/compare/v0.1.1...v0.1.2) - 2025-04-01
