@@ -48,6 +48,7 @@ var (
 	verbose               bool
 	cols                  string
 	clientMetadata        string
+	endpoint              string
 )
 
 var applyUsersCmd = &cobra.Command{
@@ -59,7 +60,7 @@ var applyUsersCmd = &cobra.Command{
 		ctx := cmd.Context()
 		idOrName := args[0]
 		p := args[1]
-		up, err := userpool.New(idOrName)
+		up, err := userpool.New(idOrName, userpool.WithEndpoint(endpoint))
 		if err != nil {
 			return err
 		}
@@ -208,6 +209,7 @@ func init() {
 	applyUsersCmd.Flags().StringVarP(&clientMetadata, "client-metadata", "m", "", "set client metadata")
 	applyUsersCmd.Flags().BoolVar(&dryRun, "dry-run", false, "dry run")
 	applyUsersCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	applyUsersCmd.Flags().StringVarP(&endpoint, "endpoint", "e", "", "set endpoint")
 }
 
 func parseClientMetadata(in string) (map[string]string, error) {

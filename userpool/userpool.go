@@ -15,6 +15,19 @@ import (
 	"go.1password.io/spg"
 )
 
+type UserPoolOption struct {
+	Endpoint string
+}
+
+type UserPoolOptionFunc func(*UserPoolOption) error
+
+func WithEndpoint(endpoint string) UserPoolOptionFunc {
+	return func(opt *UserPoolOption) error {
+		opt.Endpoint = endpoint
+		return nil
+	}
+}
+
 type Client struct {
 	userPoolID string
 	client     *cognito.Client
@@ -83,9 +96,19 @@ func WithClientIDOrName(clientIDOrName string) LoginAsOptionFunc {
 	}
 }
 
-func New(userPoolIDOrName string) (*Client, error) {
+func New(userPoolIDOrName string, opts ...UserPoolOptionFunc) (*Client, error) {
+	opt := UserPoolOption{}
+	for _, o := range opts {
+		if err := o(&opt); err != nil {
+			return nil, err
+		}
+	}
+	copts := []func(*config.LoadOptions) error{}
+	if opt.Endpoint != "" {
+		copts = append(copts, config.WithBaseEndpoint(opt.Endpoint))
+	}
 	ctx := context.Background()
-	cfg, err := config.LoadDefaultConfig(ctx)
+	cfg, err := config.LoadDefaultConfig(ctx, copts...)
 	if err != nil {
 		return nil, err
 	}

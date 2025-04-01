@@ -41,7 +41,7 @@ var loginAsCmd = &cobra.Command{
 		ctx := cmd.Context()
 		idOrName := args[0]
 		username := args[1]
-		up, err := userpool.New(idOrName)
+		up, err := userpool.New(idOrName, userpool.WithEndpoint(endpoint))
 		if err != nil {
 			return err
 		}
@@ -75,4 +75,5 @@ func init() {
 	loginAsCmd.Flags().StringVarP(&password, "password", "p", "", "password. if not set, use COGLET_PASSWORD env")
 	loginAsCmd.Flags().StringVarP(&client, "client", "c", "", "user pool client id or name")
 	loginAsCmd.Flags().StringVarP(&clientMetadata, "client-metadata", "m", "", "set client metadata")
+	loginAsCmd.Flags().StringVarP(&endpoint, "endpoint", "e", "", "set endpoint")
 }
