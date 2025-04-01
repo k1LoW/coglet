@@ -56,7 +56,7 @@ var loginAsCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		b, err := json.MarshalIndent(out, "", "  ")
+		b, err := json.Marshal(out)
 		if err != nil {
 			return err
 		}
