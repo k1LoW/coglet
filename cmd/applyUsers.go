@@ -213,6 +213,9 @@ func init() {
 func parseClientMetadata(in string) (map[string]string, error) {
 	// {"key1":"value1","key2":"value2"}
 	m := map[string]string{}
+	if in == "" {
+		return m, nil
+	}
 	if err := json.Unmarshal([]byte(in), &m); err == nil {
 		return m, nil
 	}
@@ -220,7 +223,7 @@ func parseClientMetadata(in string) (map[string]string, error) {
 	for _, kv := range strings.Split(in, ",") {
 		kv := strings.Split(kv, "=")
 		if len(kv) != 2 {
-			return nil, fmt.Errorf("invalid format")
+			return nil, fmt.Errorf("invalid format for client metadata")
 		}
 		m[kv[0]] = kv[1]
 	}
