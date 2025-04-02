@@ -161,6 +161,38 @@ Authenticate with client metadata:
 coglet login-as MyUserPool user1 --password MyPassword123 --client-metadata '{"device":"mobile","location":"tokyo"}'
 ```
 
+## Required AWS IAM Permissions for coglet
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cognito-idp:ListUserPools",
+        "cognito-idp:DescribeUserPool"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cognito-idp:AdminGetUser",
+        "cognito-idp:AdminCreateUser",
+        "cognito-idp:AdminUpdateUserAttributes",
+        "cognito-idp:AdminSetUserPassword",
+        "cognito-idp:AdminResetUserPassword",
+        "cognito-idp:ListUserPoolClients",
+        "cognito-idp:DescribeUserPoolClient",
+        "cognito-idp:InitiateAuth"
+      ],
+      "Resource": "arn:aws:cognito-idp:*:*:userpool/*"
+    }
+  ]
+}
+```
+
 ## Install
 
 **deb:**
