@@ -1,5 +1,7 @@
 # Changelog
 
+## [v0.3.2](https://github.com/k1LoW/coglet/compare/v0.3.1...v0.3.2) - 2025-04-02
+
 ## [v0.3.1](https://github.com/k1LoW/coglet/compare/v0.3.0...v0.3.1) - 2025-04-01
 ### Other Changes
 - feat: add endpoint configuration to userpool by @k1LoW in https://github.com/k1LoW/coglet/pull/14
