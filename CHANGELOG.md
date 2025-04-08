@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.3.2](https://github.com/k1LoW/coglet/compare/v0.3.1...v0.3.2) - 2025-04-08
+### Other Changes
+- chore(deps): bump the dependencies group with 2 updates by @dependabot in https://github.com/k1LoW/coglet/pull/17
+- fix(userpool): increase retry max attempts by @k1LoW in https://github.com/k1LoW/coglet/pull/18
+
 ## [v0.3.1](https://github.com/k1LoW/coglet/compare/v0.3.0...v0.3.1) - 2025-04-01
 ### Other Changes
 - feat: add endpoint configuration to userpool by @k1LoW in https://github.com/k1LoW/coglet/pull/14
