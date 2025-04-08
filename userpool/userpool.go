@@ -103,7 +103,9 @@ func New(userPoolIDOrName string, opts ...UserPoolOptionFunc) (*Client, error) {
 			return nil, err
 		}
 	}
-	copts := []func(*config.LoadOptions) error{}
+	copts := []func(*config.LoadOptions) error{
+		config.WithRetryMaxAttempts(10),
+	}
 	if opt.Endpoint != "" {
 		copts = append(copts, config.WithBaseEndpoint(opt.Endpoint))
 	}
