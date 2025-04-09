@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.0](https://github.com/k1LoW/coglet/compare/v0.3.3...v0.4.0) - 2025-04-09
+### New Features 🎉
+- feat(login-as): add caching support for authentication tokens by @k1LoW in https://github.com/k1LoW/coglet/pull/21
+
 ## [v0.3.3](https://github.com/k1LoW/coglet/compare/v0.3.2...v0.3.3) - 2025-04-09
 ### Other Changes
 - feat: add support for skipping header lines in CSV files by @k1LoW in https://github.com/k1LoW/coglet/pull/19
