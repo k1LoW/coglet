@@ -25,12 +25,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
+	"time"
 
+	cognito "github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
 	"github.com/k1LoW/coglet/userpool"
 	"github.com/spf13/cobra"
 )
 
-var client string
+var (
+	client   string
+	useCache bool
+)
 
 var loginAsCmd = &cobra.Command{
 	Use:   "login-as [USER_POOL_ID_OR_NAME] [USERNAME]",
@@ -48,6 +55,20 @@ var loginAsCmd = &cobra.Command{
 		if password == "" {
 			password = os.Getenv("COGLET_PASSWORD")
 		}
+		key := fmt.Sprintf("%s:%s", up.ID(), username)
+
+		if useCache {
+			out, err := getTokenFromCache(key)
+			if err == nil {
+				b, err := json.Marshal(out)
+				if err != nil {
+					return err
+				}
+				fmt.Println(string(b))
+				return nil
+			}
+		}
+
 		cm, err := parseClientMetadata(clientMetadata)
 		if err != nil {
 			return nil
@@ -65,6 +86,11 @@ var loginAsCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+		if useCache {
+			if err := saveTokenAsCache(key, out); err != nil {
+				return err
+			}
+		}
 		fmt.Println(string(b))
 		return nil
 	},
@@ -76,4 +102,63 @@ func init() {
 	loginAsCmd.Flags().StringVarP(&client, "client", "c", "", "user pool client id or name")
 	loginAsCmd.Flags().StringVarP(&clientMetadata, "client-metadata", "m", "", "set client metadata")
 	loginAsCmd.Flags().StringVarP(&endpoint, "endpoint", "e", "", "set endpoint")
+	loginAsCmd.Flags().BoolVarP(&useCache, "use-cache", "", false, "use cache")
+}
+
+type cache struct {
+	ExpiredAt int64 `json:"expired_at"`
+	Auth      *cognito.InitiateAuthOutput
+}
+
+func saveTokenAsCache(key string, out *cognito.InitiateAuthOutput) error {
+	if _, err := os.Stat(statePath()); err != nil {
+		if err := os.MkdirAll(statePath(), 0700); err != nil {
+			return err
+		}
+	}
+	c := cache{
+		ExpiredAt: int64(out.AuthenticationResult.ExpiresIn) + time.Now().Unix() - 60, // 1 min before
+		Auth:      out,
+	}
+	b, err := json.Marshal(c)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(cachePath(key), b, 0600)
+}
+
+func getTokenFromCache(key string) (*cognito.InitiateAuthOutput, error) {
+	if _, err := os.Stat(statePath()); err != nil {
+		return nil, err
+	}
+	b, err := os.ReadFile(cachePath(key))
+	if err != nil {
+		return nil, err
+	}
+	c := cache{}
+	if err := json.Unmarshal(b, &c); err != nil {
+		return nil, err
+	}
+	if c.ExpiredAt < time.Now().Unix() {
+		if err := os.Remove(cachePath(key)); err != nil {
+			return nil, err
+		}
+		return nil, fmt.Errorf("token expired")
+	}
+	return c.Auth, nil
+}
+
+func cachePath(key string) string {
+	r := strings.NewReplacer(":", "_", "/", "_")
+	return filepath.Join(statePath(), fmt.Sprintf("%s.json", r.Replace(key)))
+}
+
+func statePath() string {
+	p := os.Getenv("XDG_STATE_HOME")
+	if p == "" {
+		home, _ := os.UserHomeDir()
+		p = filepath.Join(home, ".local", "state")
+	}
+	return filepath.Join(p, "coglet")
 }
