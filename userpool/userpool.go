@@ -126,6 +126,10 @@ func New(userPoolIDOrName string, opts ...UserPoolOptionFunc) (*Client, error) {
 	return c, nil
 }
 
+func (c *Client) ID() string {
+	return c.userPoolID
+}
+
 func (c *Client) ApplyUser(ctx context.Context, user User, opts ...ApplyUserOptionFunc) error {
 	if user.Username == "" {
 		return errors.New("username is required")
