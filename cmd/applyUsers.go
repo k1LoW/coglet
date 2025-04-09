@@ -47,6 +47,7 @@ var (
 	dryRun                bool
 	verbose               bool
 	cols                  string
+	skipHeader            int
 	clientMetadata        string
 	endpoint              string
 )
@@ -133,6 +134,9 @@ var applyUsersCmd = &cobra.Command{
 				}
 			} else {
 				// CSV
+				if l <= skipHeader {
+					continue
+				}
 				keys := strings.Split(cols, ",")
 				fields := strings.Split(line, ",")
 				if len(keys) != len(fields) {
@@ -206,6 +210,7 @@ func init() {
 	applyUsersCmd.Flags().BoolVarP(&sendPasswordResetCode, "send-password-reset-code", "s", false, "send password reset code")
 	applyUsersCmd.Flags().StringVarP(&filter, "filter", "f", "", "filter apply users")
 	applyUsersCmd.Flags().StringVarP(&cols, "columns", "c", "", "define columns for CSV format")
+	applyUsersCmd.Flags().IntVarP(&skipHeader, "skip-header", "S", 0, "count of CSV header lines to skip")
 	applyUsersCmd.Flags().StringVarP(&clientMetadata, "client-metadata", "m", "", "set client metadata")
 	applyUsersCmd.Flags().BoolVar(&dryRun, "dry-run", false, "dry run")
 	applyUsersCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
