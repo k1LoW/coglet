@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.3.3](https://github.com/k1LoW/coglet/compare/v0.3.2...v0.3.3) - 2025-04-09
+### Other Changes
+- feat: add support for skipping header lines in CSV files by @k1LoW in https://github.com/k1LoW/coglet/pull/19
+
 ## [v0.3.2](https://github.com/k1LoW/coglet/compare/v0.3.1...v0.3.2) - 2025-04-08
 ### Other Changes
 - chore(deps): bump the dependencies group with 2 updates by @dependabot in https://github.com/k1LoW/coglet/pull/17
