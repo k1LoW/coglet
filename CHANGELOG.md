@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.1](https://github.com/k1LoW/coglet/compare/v0.4.0...v0.4.1) - 2025-04-30
+### Other Changes
+- chore(deps): bump the dependencies group across 1 directory with 2 updates by @dependabot in https://github.com/k1LoW/coglet/pull/24
+
 ## [v0.4.0](https://github.com/k1LoW/coglet/compare/v0.3.3...v0.4.0) - 2025-04-09
 ### New Features 🎉
 - feat(login-as): add caching support for authentication tokens by @k1LoW in https://github.com/k1LoW/coglet/pull/21
