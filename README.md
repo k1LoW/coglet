@@ -224,6 +224,12 @@ $ apk add coglet.apk
 $ brew install k1LoW/tap/coglet
 ```
 
+**[aqua](https://aquaproj.github.io/):**
+
+```console
+$ aqua g -i k1LoW/coglet
+```
+
 **manually:**
 
 Download binary from [releases page](https://github.com/k1LoW/coglet/releases)
