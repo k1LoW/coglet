@@ -1,5 +1,14 @@
 # Changelog
 
+## [v0.4.1](https://github.com/k1LoW/coglet/compare/v0.4.0...v0.4.1) - 2025-09-15
+### Other Changes
+- chore(deps): bump the dependencies group across 1 directory with 2 updates by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/24
+- chore(deps): bump github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider from 1.52.0 to 1.53.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/26
+- chore(deps): bump actions/checkout from 4 to 5 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/29
+- chore(deps): bump the dependencies group across 1 directory with 4 updates by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/31
+- chore(deps): bump actions/setup-go from 5 to 6 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/30
+- chore(deps): bump the dependencies group with 3 updates by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/32
+
 ## [v0.4.0](https://github.com/k1LoW/coglet/compare/v0.3.3...v0.4.0) - 2025-04-09
 ### New Features 🎉
 - feat(login-as): add caching support for authentication tokens by @k1LoW in https://github.com/k1LoW/coglet/pull/21
