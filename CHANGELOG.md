@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.4.2](https://github.com/k1LoW/coglet/compare/v0.4.1...v0.4.2) - 2025-10-23
+### Other Changes
+- chore(deps): bump the dependencies group with 3 updates by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/33
+- chore: setup tagpr labels by @k1LoW in https://github.com/k1LoW/coglet/pull/37
+- chore(deps): bump the dependencies group across 1 directory with 3 updates by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/36
+
 ## [v0.4.1](https://github.com/k1LoW/coglet/compare/v0.4.0...v0.4.1) - 2025-09-15
 ### Other Changes
 - chore(deps): bump the dependencies group across 1 directory with 2 updates by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/24
