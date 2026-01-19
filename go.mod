@@ -5,7 +5,7 @@ go 1.24
 require (
 	github.com/aws/aws-sdk-go-v2 v1.41.1
 	github.com/aws/aws-sdk-go-v2/config v1.32.7
-	github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider v1.57.18
+	github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider v1.57.19
 	github.com/k1LoW/donegroup v1.10.2
 	github.com/spf13/cobra v1.10.2
 	go.1password.io/spg v0.1.0
