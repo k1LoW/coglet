@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.41.1
 	github.com/aws/aws-sdk-go-v2/config v1.32.7
 	github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider v1.58.0
-	github.com/k1LoW/donegroup v1.10.2
+	github.com/k1LoW/donegroup v1.10.3
 	github.com/spf13/cobra v1.10.2
 	go.1password.io/spg v0.1.0
 )
