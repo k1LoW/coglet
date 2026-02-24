@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.4.3](https://github.com/k1LoW/coglet/compare/v0.4.2...v0.4.3) - 2026-02-24
+### Other Changes
+- chore(deps): bump the dependencies group with 3 updates by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/45
+- chore(deps): bump github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider from 1.57.18 to 1.57.19 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/47
+- chore(deps): bump github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider from 1.57.19 to 1.58.0 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/48
+- chore(deps): bump goreleaser/goreleaser-action from 6 to 7 in the dependencies group by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/50
+- chore(deps): bump the dependencies group across 1 directory with 2 updates by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/51
+
 ## [v0.4.2](https://github.com/k1LoW/coglet/compare/v0.4.1...v0.4.2) - 2025-12-22
 ### Other Changes
 - chore(deps): bump the dependencies group with 3 updates by @dependabot[bot] in https://github.com/k1LoW/coglet/pull/33
